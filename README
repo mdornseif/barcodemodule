@@ -1,0 +1,7 @@
+This are Python Bindings for the GNU barcode library. See http://c0re.jp/
+
+try:
+
+$ (cd barcode-0.98; ./configure; make install)
+$ python setup.py build
+$ python setup.py install

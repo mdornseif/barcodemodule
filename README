@@ -1,7 +1,20 @@
-This are Python Bindings for the GNU barcode library. See http://c0re.jp/
+This are Python Bindings for the GNU barcode library.  See
+http://c0re.jp/ - you might to be able to find more inforation about
+it.
 
-try:
+To install try:
 
 $ (cd barcode-0.98; ./configure; make install)
 $ python setup.py build
 $ python setup.py install
+
+
+At the moment barcodemodule does not support printing but only
+conversation from raw data to the intermediate
+representation. Conversation to something printable is done by Python
+functions. 
+
+At the momnent there are converters for Postscript and Reportlab.
+
+  --md@hudora.de
+

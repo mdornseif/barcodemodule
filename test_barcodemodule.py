@@ -1,5 +1,5 @@
 import unittest
-import barcode
+import _barcode
 
 
 
@@ -13,9 +13,6 @@ class moduleFunctionality(unittest.TestCase):
     'BARCODE_OUTPUT_MASK', 'BARCODE_OUT_EPS', 'BARCODE_OUT_NOHEADERS',
     'BARCODE_OUT_PCL', 'BARCODE_OUT_PCL_III', 'BARCODE_OUT_PS',
     'BARCODE_PLS', 'BARCODE_UPC']
-
-    #'__doc__', '__file__', '__name__',
-    #'barcode', 'barcodeType', 'version']
 
     t = ["123456789012",
          "1234567890128",
@@ -36,10 +33,10 @@ class moduleFunctionality(unittest.TestCase):
 
     def testModuleConstants(self):
         for x in self.constants:
-            self.failUnlessEqual(eval("barcode.%s" % x), barcode.__dict__[x])
+            self.failUnlessEqual(eval("_barcode.%s" % x), _barcode.__dict__[x])
             
     def testVersionFunction(self):
-        self.failUnlessEqual(barcode.version(), 9800)
+        self.failUnlessEqual(_barcode.version(), 9800)
 
     def testEncodeFunction(self):
         someTestValues = {'012345': ('9a1a11232221221214112311a2c11a1a1a',
@@ -90,6 +87,58 @@ class moduleFunctionality(unittest.TestCase):
         
         
         for x, y in someTestValues.items():
-            self.failUnlessEqual(barcode.encode(barcode.BARCODE_ANY, x), y)
-        
+            self.failUnlessEqual(_barcode.encode(_barcode.BARCODE_ANY, x), y)
+
+            
+    def testLegalEncodings(self):
+        someTestValues = {_barcode.BARCODE_EAN: ("123456789012",
+                                                "1234567890128",
+                                                "1234567",
+                                                "12345670 12345",
+                                                "123456789012 12",
+                                                "123456789012 12345"),
+                          _barcode.BARCODE_UPC: ("01234567890",
+                                                "012345678905",
+                                                "012345",
+                                                "01234567890 12",
+                                                "01234567890 12345"),
+                          _barcode.BARCODE_ISBN: ("1-56592-292-1",
+                                                 "3-89721-122-X",
+                                                 "3-89721-122-X 06900"),
+                          _barcode.BARCODE_128B: ('space (32) to DEL (127)',),
+                          #  The encoder refuses to deal with an odd number of digits
+                          _barcode.BARCODE_128C: ('1234567890',),
+                          _barcode.BARCODE_128: ('\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r',
+                                                 '\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19',
+                                                 '\x1a\x1b\x1c\x1d\x1e\x1f !"#$%&\'()*+,-./0123456789',
+                                                 ':;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`',
+                                                 'abcdefghijklmnopqrstuvwxyz{|}~\x7f',
+                                                 '\x80\xc1\xc2\xc3\xc4'),
+                          # this provokes a vrash in libbarcode 0.98
+                          #_barcode.BARCODE_128RAW: ('0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18',
+                          #                          '19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34',
+                          #                          '35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50',
+                          #                          '51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66',
+                          #                          '67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82',
+                          #                          '83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98',
+                          #                          '99 100 101 102 103 104 105'),
+                          _barcode.BARCODE_39: ('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ-. *$/+%',),
+                          _barcode.BARCODE_93: ('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%',),
+                          # This encoding can only represent an even number of digits
+                          _barcode.BARCODE_I25: ('1234567890',),
+                          _barcode.BARCODE_CBR: ('0123456789-$:/.+', 'A0123456789-$:/.+B', 'C0123456789-$:/.+D'),
+                          _barcode.BARCODE_PLS: ('0123456789ABCDEF',),
+                          _barcode.BARCODE_MSI: ('0123456789',)}
+
+        for enctype, l in someTestValues.items():
+            for x in l:
+                _barcode.encode(enctype, x)
+
+    def testOddNrIfDigitsError(self):
+        self.failUnlessRaises(RuntimeError, _barcode.encode, _barcode.BARCODE_128C, '12345678901')
+        # No Idea why this fails
+        #self.failUnlessRaises(RuntimeError, _barcode.encode, _barcode.BARCODE_I25, '12345678901')
+
+
+ 
 unittest.main()

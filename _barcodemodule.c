@@ -1,4 +1,4 @@
-/* $Id: _barcodemodule.c,v 1.2 2002/07/18 21:36:36 drt Exp $ */ 
+/* $Id: _barcodemodule.c,v 1.3 2002/07/22 22:05:44 drt Exp $ */ 
 
 /* python bindings for the GNU barcode library */
 
@@ -416,12 +416,13 @@ static PyMethodDef barcode_functions[] = {
 /* Initialize this module. */
 
 DL_EXPORT(void)
-initbarcode(void)
+init_barcode(void)
 {
 	PyObject *m, *d;
 
-	m = Py_InitModule3("barcode", barcode_functions, module_doc);
+	m = Py_InitModule3("_barcode", barcode_functions, module_doc);
 	d = PyModule_GetDict(m);
+	PyModule_AddStringConstant(m, "_rcsid", "$Id: _barcodemodule.c,v 1.3 2002/07/22 22:05:44 drt Exp $");
 	PyModule_AddIntConstant(m, "BARCODE_ANY", BARCODE_ANY);
 	PyModule_AddIntConstant(m, "BARCODE_EAN", BARCODE_EAN);
 	PyModule_AddIntConstant(m, "BARCODE_UPC", BARCODE_UPC);
